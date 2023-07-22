@@ -27,14 +27,16 @@ def gain_chart():
 
     teamName = '맨시티'
     name = df[df['홈'] == teamName]
-    teamScore = name['득점']
+    teamLoss = name['실점']
     time = name['시간']
     l = {
         'x' : time.values.tolist(),
-        'y' : teamScore.values.tolist(),
+        'y' : teamLoss.values.tolist(),
     }
     res = json.dumps(l)
     return res
+
+
 
 if __name__ == '__main__':
     app.run()
