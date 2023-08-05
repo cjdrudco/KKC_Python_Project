@@ -1,0 +1,5 @@
+ww
+i = 0
+while 조건:
+    print("안녕 i:%d" % i)
+    i = i + 1

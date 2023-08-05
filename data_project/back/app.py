@@ -20,8 +20,8 @@ def main():
     }
     res = json.dumps(l)
     return res
-# 득점 분석 차트 정보 POST
-@app.route('/gain_chart')
+# 홈팀 득점 분석 차트 정보 POST
+@app.route('/home_gain_chart')
 def gain_chart():
     global df
 
@@ -37,8 +37,25 @@ def gain_chart():
     return res
 
 
-# 실점 분석 차트 정보 POST
-@app.route('/loss_chart')
+# 원정팀 득점 분석 차트 정보 POST
+@app.route('/away_gain_chart')
+def gain_chart():
+    global df
+
+    teamName = '맨시티'
+    name = df[df['원정'] == teamName]
+    teamScore = name['득점']
+    time = name['시간']
+    l = {
+        'x' : time.values.tolist(),
+        'y' : teamScore.values.tolist(),
+    }
+    res = json.dumps(l)
+    return res
+
+
+# 홈팀 실점 분석 차트 정보 POST
+@app.route('/home_loss_chart')
 def loss_chart():
     global df
     teamName = '맨시티'
@@ -53,7 +70,23 @@ def loss_chart():
 
     return json.dumps(d)
 
-# 유효슈팅 당 득점 분석 막대그래프
+# 원정팀 실점 분석 차트 정보 POST
+@app.route('/away_loss_chart')
+def loss_chart():
+    global df
+    teamName = '맨시티'
+    
+    nameDf = df[df['원정'] == teamName]
+    time = nameDf['시간']
+    teamLoss = nameDf['실점']
+    d = {
+        'x': time.values.tolist(),
+        'y': teamLoss.values.tolist(),
+    }
+
+    return json.dumps(d)
+
+# 홈팀 유효슈팅 당 득점 분석 막대그래프
 @app.route('/shoot_chart')
 def shoot_chart():
     global df
@@ -70,8 +103,25 @@ def shoot_chart():
 
     return json.dumps(d)
 
-# 점유율 당 득점 분석 산점도
-@app.route('/share_chart')
+# 원정팀 유효슈팅 당 득점 분석 막대그래프
+@app.route('/away_shoot_chart')
+def shoot_chart():
+    global df
+    teamName = '맨시티'
+
+    nameDf = df[df['원정'] == teamName]
+    teamShoot = nameDf['유효슈팅']
+    teamScore = nameDf['득점']
+
+    d = {
+        'x': teamShoot.values.tolist(),
+        'y': teamScore.values.tolist(),
+    }
+
+    return json.dumps(d)
+
+# 홈팀 점유율 당 득점 분석 산점도
+@app.route('/home_share_chart')
 def share_chart():
     global df 
     teamName = '맨시티'
@@ -86,6 +136,25 @@ def share_chart():
     }
 
     return json.dumps(d)
+
+
+# 원정팀 점유율 당 득점 분석 산점도
+@app.route('/home_share_chart')
+def share_chart():
+    global df 
+    teamName = '맨시티'
+
+    nameDf = df[df['원정'] == teamName]
+    teamShare = nameDf['볼점유율']
+    teamScore = nameDf['득점']
+
+    d = {
+        'x': teamShare.values.tolist(),
+        'y': teamScore.values.tolist(),
+    }
+
+    return json.dumps(d)
+
 
 # 홈팀과 원정팀의 시간 당 골 횟수 꺾은선 그래프
 @app.route('/time_gain_chart')
@@ -111,6 +180,7 @@ def time_gain_chart():
 # 홈팀과 원정팀의 승리 횟수 비교 분석 막대그래프
 @app.route('/win_count_chart')
 def win_count_chart():
+    global df
     homeTeam = '맨시티'
     home = df[df['홈'] == homeTeam]
 
@@ -135,13 +205,58 @@ def win_count_chart():
             count2 += 1
 
     d = {
-        'x1': homeTeam.values.tolist(),
-        'x2': awayTeam.values.tolist(),
-        'y1': count.values.tolist(),
-        'y2': count2.values.tolist(),
+        'x1': homeTeam,
+        'x2': awayTeam,
+        'y1': count,
+        'y2': count2,
+    }
+    return json.dumps(d, ensure_ascii=False)
+
+# 홈팀의 점유율 평균
+@app.route('/home_share_chart')
+def home_share_chart():
+    global df
+    teamName = '리버풀'
+    team = df[df['홈'] == teamName]
+
+    k = team['볼점유율'].values.tolist()
+    t = []
+    for item in k:
+        t.append(int(item.replace('%', '')))
+
+    avg = sum(t) / len(t)
+
+
+    d = {
+        'x': avg,
     }
 
     return json.dumps(d)
+
+#원정팀의 점유율 평균
+@app.route('/away_share_chart')
+def away_share_chart():
+    global df
+    teamName = '리버풀'
+    team = df[df['원정'] == teamName]
+
+    k = team['볼점유율'].values.tolist()
+    t = []
+    for item in k:
+        t.append(int(item.replace('%', '')))
+
+    avg = sum(t) / len(t)
+
+
+    d = {
+        'x': avg,
+    }
+
+    return json.dumps(d)
+
+
+
+
 
 
 if __name__ == '__main__':
